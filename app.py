@@ -35,8 +35,8 @@ def home():
         f"/api/v1.0/precipitation<br/>"
         f"/api/v1.0/stations<br/>"
         f"/api/v1.0/tobs<br/>"
-        f"/api/v1.0/<start><br/>"
-        f"/api/v1.0/<start>/<end><br/>"
+        f"/api/v1.0/{{start}}<br/>"
+        f"/api/v1.0/{{start}}/{{end}}<br/>"
     )
 
 # Define what to do when a user hits the various routes
@@ -127,7 +127,7 @@ def start(start):
     return jsonify(result)
 
 @app.route("/api/v1.0/<start>/<end>")
-def end(start,end):
+def end(start, end):
 
     # Create our session (link) from Python to the DB
     session = Session(engine)
@@ -136,7 +136,7 @@ def end(start,end):
     temp_data = session.query(func.min(measurement.tobs).label('lowest temp'),\
         func.max(measurement.tobs).label('highest temp'),\
         func.avg(measurement.tobs).label('average temp'))\
-        .filter( measurement.date >= start, end <= measurement.date >= start ).first()
+        .filter( measurement.date >= start, measurement.date <= end ).first()
 
     session.close()
      #When given the start and the end date, calculate the TMIN, TAVG, and TMAX for dates between the start and end date inclusive.
